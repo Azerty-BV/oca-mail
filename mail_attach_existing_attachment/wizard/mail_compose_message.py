@@ -16,7 +16,7 @@ class MailComposeMessage(models.TransientModel):
             and res.get("res_ids")
             and res.get("composition_mode", "") != "mass_mail"
         ):
-            res["can_attach_attachment"] = True  # pragma: no cover
+            res["can_attach_attachment"] = True
         return res
 
     can_attach_attachment = fields.Boolean()
@@ -31,6 +31,15 @@ class MailComposeMessage(models.TransientModel):
         comodel_name="ir.attachment",
         compute="_compute_display_object_attachment_ids",
     )
+
+    res_id = fields.Integer(compute='_compute_res_id')
+
+    @api.depends("res_ids", "model")
+    def _compute_res_id(self):
+        for composer in self:
+            res_ids = composer._evaluate_res_ids()
+            if len(res_ids) == 1:
+                composer.res_id = res_ids[0]
 
     @api.depends("res_ids", "model")
     def _compute_display_object_attachment_ids(self):
