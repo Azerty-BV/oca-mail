@@ -27,10 +27,10 @@ class MailComposeMessage(models.TransientModel):
         column2="attachment_id",
         string="Object Attachments",
     )
-    display_object_attachment_ids = fields.One2many(
-        comodel_name="ir.attachment",
-        compute="_compute_display_object_attachment_ids",
-    )
+    # display_object_attachment_ids = fields.One2many(
+    #     comodel_name="ir.attachment",
+    #     compute="_compute_display_object_attachment_ids",
+    # )
 
     res_id = fields.Integer(compute='_compute_res_id')
 
@@ -41,21 +41,21 @@ class MailComposeMessage(models.TransientModel):
             if len(res_ids) == 1:
                 composer.res_id = res_ids[0]
 
-    @api.depends("res_ids", "model")
-    def _compute_display_object_attachment_ids(self):
-        for composer in self:
-            res_ids = self._evaluate_res_ids()
-            model = self.model
-            if model and res_ids:
-                attachments = self.env["ir.attachment"].search(
-                    [
-                        ("res_model", "=", model),
-                        ("res_id", "in", res_ids),
-                    ]
-                )
-                composer.display_object_attachment_ids = attachments
-            else:
-                composer.display_object_attachment_ids = False
+    # @api.depends("res_ids", "model")
+    # def _compute_display_object_attachment_ids(self):
+    #     for composer in self:
+    #         res_ids = self._evaluate_res_ids()
+    #         model = self.model
+    #         if model and res_ids:
+    #             attachments = self.env["ir.attachment"].search(
+    #                 [
+    #                     ("res_model", "=", model),
+    #                     ("res_id", "in", res_ids),
+    #                 ]
+    #             )
+    #             composer.display_object_attachment_ids = attachments
+    #         else:
+    #             composer.display_object_attachment_ids = False
 
     def _prepare_mail_values(self, res_ids):
         res = super()._prepare_mail_values(res_ids)
