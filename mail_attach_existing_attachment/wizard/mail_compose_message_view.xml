@@ -4,7 +4,6 @@
         <field name="name">mail.compose.message.form (mail_attach_existing_attachment)</field>
         <field name="model">mail.compose.message</field>
         <field name="inherit_id" ref="mail.email_compose_message_wizard_form" />
-        <field name="group_ids" eval="[Command.link(ref('base.group_user'))]"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='attachment_ids']/.." position="before">
                 <field name="can_attach_attachment" invisible="1" />
