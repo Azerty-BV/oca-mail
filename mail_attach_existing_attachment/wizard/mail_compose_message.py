@@ -36,6 +36,9 @@ class MailComposeMessage(models.TransientModel):
 
     @api.depends("res_ids", "model")
     def _compute_res_id(self):
+        self.id = False
+        if not self.ids:
+            return
         for composer in self:
             res_ids = composer._evaluate_res_ids()
             if len(res_ids) == 1:
