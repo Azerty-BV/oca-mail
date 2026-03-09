@@ -8,15 +8,15 @@ class MailComposeMessage(models.TransientModel):
     _inherit = "mail.compose.message"
 
     @api.model
-    def default_get(self, fields):
-        res = super().default_get(fields)
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
         if (
             "can_attach_attachment" not in res
             and res.get("model")
             and res.get("res_ids")
             and res.get("composition_mode", "") != "mass_mail"
         ):
-            res["can_attach_attachment"] = True
+            res["can_attach_attachment"] = True  # pragma: no cover
         return res
 
     can_attach_attachment = fields.Boolean()
@@ -27,38 +27,28 @@ class MailComposeMessage(models.TransientModel):
         column2="attachment_id",
         string="Object Attachments",
     )
-    # display_object_attachment_ids = fields.One2many(
-    #     comodel_name="ir.attachment",
-    #     compute="_compute_display_object_attachment_ids",
-    # )
-
-    res_id = fields.Integer(compute='_compute_res_id')
+    display_object_attachment_ids = fields.One2many(
+        comodel_name="ir.attachment",
+        compute="_compute_display_object_attachment_ids",
+    )
 
     @api.depends("res_ids", "model")
-    def _compute_res_id(self):
-        self.res_id = False
-        if not self.ids:
-            return
+    def _compute_display_object_attachment_ids(self):
         for composer in self:
-            res_ids = composer._evaluate_res_ids()
-            if len(res_ids) == 1:
-                composer.res_id = res_ids[0]
-
-    # @api.depends("res_ids", "model")
-    # def _compute_display_object_attachment_ids(self):
-    #     for composer in self:
-    #         res_ids = self._evaluate_res_ids()
-    #         model = self.model
-    #         if model and res_ids:
-    #             attachments = self.env["ir.attachment"].search(
-    #                 [
-    #                     ("res_model", "=", model),
-    #                     ("res_id", "in", res_ids),
-    #                 ]
-    #             )
-    #             composer.display_object_attachment_ids = attachments
-    #         else:
-    #             composer.display_object_attachment_ids = False
+            res_ids = self._evaluate_res_ids()
+            if res_ids and len(res_ids) == 1:
+                res_id = res_ids[0]
+            model = self.model
+            if model and res_id:
+                attachments = self.env["ir.attachment"].search(
+                    [
+                        ("res_model", "=", model),
+                        ("res_id", "=", res_id),
+                    ]
+                )
+                composer.display_object_attachment_ids = attachments
+            else:
+                composer.display_object_attachment_ids = False
 
     def _prepare_mail_values(self, res_ids):
         res = super()._prepare_mail_values(res_ids)
