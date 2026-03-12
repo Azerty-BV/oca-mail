@@ -8,8 +8,8 @@ class MailComposeMessage(models.TransientModel):
     _inherit = "mail.compose.message"
 
     @api.model
-    def default_get(self, fields_list):
-        res = super().default_get(fields_list)
+    def default_get(self, fields):
+        res = super().default_get(fields)
         if (
             "can_attach_attachment" not in res
             and res.get("model")
@@ -36,6 +36,7 @@ class MailComposeMessage(models.TransientModel):
     def _compute_display_object_attachment_ids(self):
         for composer in self:
             res_ids = self._evaluate_res_ids()
+            res_id = False
             if res_ids and len(res_ids) == 1:
                 res_id = res_ids[0]
             model = self.model

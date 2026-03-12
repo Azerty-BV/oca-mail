@@ -7,7 +7,7 @@
             <xpath expr="//field[@name='attachment_ids']" position="after">
                 <field name="can_attach_attachment" invisible="1" />
                 <field name="display_object_attachment_ids" invisible="1" />
-                <div invisible="not can_attach_attachment"
+                <div invisible="not can_attach_attachment or not display_object_attachment_ids"
                     style="max-height: 150px; overflow-y: scroll;">
                     <span>Inclusief bijlagen:</span>
                     <br />
