@@ -34,6 +34,9 @@ class MailComposeMessage(models.TransientModel):
 
     @api.depends("res_ids", "model")
     def _compute_display_object_attachment_ids(self):
+        if not self.ids:
+            self.display_object_attachment_ids = False
+            return
         for composer in self:
             res_ids = self._evaluate_res_ids()
             res_id = False
